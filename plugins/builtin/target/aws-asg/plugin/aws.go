@@ -24,10 +24,24 @@ const (
 // setupAWSClients takes the passed config mapping and instantiates the
 // required AWS service clients.
 func (t *TargetPlugin) setupAWSClients(config map[string]string) error {
-
+	// https://aws.github.io/aws-sdk-go-v2/docs/configuring-sdk/endpoints/
+	customResolver := aws.EndpointResolverWithOptionsFunc(func(service, region string, options ...interface{}) (aws.Endpoint, error) {
+		if service == autoscaling.ServiceID {
+			return aws.Endpoint{
+				PartitionID:   "aws",
+				URL:           "https://compute-de-fra-02.zadara.com/api/v2/aws/autoscaling",
+				SigningRegion: "us-east-1",
+			}, nil
+		}
+		return aws.Endpoint{}, fmt.Errorf("unknown endpoint requested")
+	})
+	
+	cfg, err := awsconfig.LoadDefaultConfig(context.TODO(), awsconfig.WithEndpointResolverWithOptions(customResolver))
 	// Load our default AWS config. This handles pulling configuration from
 	// default profiles and environment variables.
+	/*
 	cfg, err := awsconfig.LoadDefaultConfig(context.TODO())
+	*/
 	if err != nil {
 		return fmt.Errorf("failed to load default AWS config: %v", err)
 	}

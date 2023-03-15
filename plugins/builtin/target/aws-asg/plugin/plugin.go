@@ -13,7 +13,7 @@ import (
 	"github.com/hashicorp/nomad-autoscaler/plugins/target"
 	"github.com/hashicorp/nomad-autoscaler/sdk"
 	"github.com/hashicorp/nomad-autoscaler/sdk/helper/nomad"
-	"github.com/hashicorp/nomad-autoscaler/sdk/helper/ptr"
+	//"github.com/hashicorp/nomad-autoscaler/sdk/helper/ptr"
 	"github.com/hashicorp/nomad-autoscaler/sdk/helper/scaleutils"
 )
 
@@ -136,11 +136,17 @@ func (t *TargetPlugin) Scale(action sdk.ScalingAction, config map[string]string)
 
 	// Autoscaling can interfere with a running instance refresh so we
 	// prevent any scaling action while a refresh is Pending or InProgress
+
+	/*
+		Commenting this section due to error:
+		2023-03-11T23:19:26.954Z [ERROR] policy_eval.worker: failed to evaluate policy: eval_id=8ef25ed5-5121-99a9-d16d-4d4159b3c2eb eval_token=4fe238cd-0303-696d-892c-859c3061474f id=27a9eb71-4abc-a933-8310-0a3276ad555a policy_id=ff44952e-babb-5fb0-6956-682bd200fc06 queue=cluster error="failed to scale target: failed to describe AWS InstanceRefresh: operation error Auto Scaling: DescribeInstanceRefreshes, https response error StatusCode: 400, RequestID: ae211b31-310e-4771-abd7-ec541a239ba9, api error InvalidAction: The action or operation requested (DescribeInstanceRefreshes) is invalid. Verify that the action is typed correctly."
+	*/
+	/*
 	input := autoscaling.DescribeInstanceRefreshesInput{
 		AutoScalingGroupName: &asgName,
 		MaxRecords:           ptr.Int32ToPtr(1),
 	}
-
+	
 	refreshes, err := t.asg.DescribeInstanceRefreshes(ctx, &input)
 	if err != nil {
 		return fmt.Errorf("failed to describe AWS InstanceRefresh: %v", err)
@@ -158,7 +164,7 @@ func (t *TargetPlugin) Scale(action sdk.ScalingAction, config map[string]string)
 			return nil
 		}
 	}
-
+	*/
 	// The AWS ASG target requires different details depending on which
 	// direction we want to scale. Therefore calculate the direction and the
 	// relevant number so we can correctly perform the AWS work.
